@@ -3,6 +3,8 @@
 **Acceso a Datos – 2º DAM**  
 **Centro de Enseñanza Concertada “Gregorio Fernández”**
 
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/nicgrefer/ProyectoAccesoDatos)
+
 ---
 
 ## 📌 Descripción del Proyecto
