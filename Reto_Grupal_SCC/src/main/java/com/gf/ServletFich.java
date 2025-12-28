@@ -1,5 +1,7 @@
 package com.gf;
 
+import com.gf.handlers.JSONHandler;
+import com.gf.models.DatoAmbiental;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -13,9 +15,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.module.ModuleDescriptor.Builder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +35,7 @@ import com.alibaba.excel.EasyExcel;
 public class ServletFich extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private static final Path PATH = Paths.get("user.dir", "src", "main", "resources");
+	private static final Path PATH = Paths.get(System.getProperty("user.dir"), "src", "main", "resources");
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -69,7 +73,7 @@ public class ServletFich extends HttpServlet {
 				
 				String param = request.getParameter(dato);
 				
-				if (param==null) {
+				if (param == null || param.trim().isEmpty()) {
 					mensaje = "(*) Los campos no pueden estar vacíos";
 					
 					request.setAttribute("error", mensaje);
@@ -81,9 +85,48 @@ public class ServletFich extends HttpServlet {
 			
 			if (hasError) pagina = "TratamientoFich.jsp";
 			else {
-				this.procesarDatos(listaDatos, formatoFichero);
-				request.setAttribute("lista", listaDatos);
-				pagina = "AccesoDatosA.jsp";
+				// Usar carpeta dentro de la webapp para almacenar archivos en tiempo de ejecución
+				String filesRealPath = request.getServletContext().getRealPath("/files");
+				Path filesDir = Paths.get(filesRealPath == null ? "files" : filesRealPath);
+				try {
+					Files.createDirectories(filesDir);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				if ("lectura".equalsIgnoreCase(leerEscribir)) {
+					if ("json".equalsIgnoreCase(formatoFichero)) {
+						try {
+							List<DatoAmbiental> registros = JSONHandler.leerJSON(filesDir.resolve("datos.json").toString());
+							request.setAttribute("registros", registros);
+							pagina = "MostrarJSON.jsp";
+						} catch (IOException e) {
+							e.printStackTrace();
+							request.setAttribute("error", "Error leyendo JSON: "+e.getMessage());
+							pagina = "AccesoDatosA.jsp";
+						}
+					} else if ("xml".equalsIgnoreCase(formatoFichero) || "rdf".equalsIgnoreCase(formatoFichero)) {
+						// Formatos no implementados para lectura
+						request.setAttribute("error", "Formato '" + formatoFichero + "' no implementado para lectura.");
+						pagina = "TratamientoFich.jsp";
+					} else {
+						// Otros formatos (por ahora mostramos la lista enviada)
+						request.setAttribute("lista", listaDatos);
+						request.setAttribute("formato", formatoFichero);
+						pagina = "AccesoDatosA.jsp";
+					}
+				} else {
+					// Escritura: validar si el formato está implementado
+					if ("xml".equalsIgnoreCase(formatoFichero) || "rdf".equalsIgnoreCase(formatoFichero)) {
+						request.setAttribute("error", "Formato '" + formatoFichero + "' no implementado para escritura.");
+						pagina = "TratamientoFich.jsp";
+					} else {
+						this.procesarDatos(listaDatos, formatoFichero, filesDir);
+						request.setAttribute("lista", listaDatos);
+						request.setAttribute("formato", formatoFichero);
+						pagina = "AccesoDatosA.jsp";
+					}
+				}
 			}
 			
 			break;
@@ -98,37 +141,62 @@ public class ServletFich extends HttpServlet {
 		
 	}
 
-	private void procesarDatos(List<String> listaDatos, String formatoFichero) {
+	private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
 		switch (formatoFichero) {
-			case "xls" -> {
-				// Lógica para escribir
-				EasyExcel.write(PATH.toString().concat("datos.xls"), List.class)
+			case "xls": {
+				try {
+					Files.createDirectories(baseDir);
+				} catch (IOException ignored) {}
+				List<List<String>> excelData = new ArrayList<>();
+				excelData.add(listaDatos);
+				EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
 						.sheet("Datos")
-						.doWrite(listaDatos);
-				
+						.doWrite(excelData);
+				break;
 			}
-			case "csv" -> {
-			    CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-			    		.setHeader(new String[] {"DATO 1", "DATO 2", "DATO 3", "DATO 4", "DATO 5", "DATO 6"})
-			    		.get();
-			    StringWriter sw = new StringWriter();
-			    try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
-			    	for (String dato : listaDatos) {
-			    		printer.print(dato);
-				    }
+			case "csv": {
+				try {
+					Files.createDirectories(baseDir);
+				} catch (IOException ignored) {}
+				Path csvPath = baseDir.resolve("datos.csv");
+				boolean exists = Files.exists(csvPath);
+				CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+						.setHeader("DATO 1", "DATO 2", "DATO 3", "DATO 4", "DATO 5", "DATO 6")
+						.setSkipHeaderRecord(exists)
+						.get();
+
+				try (BufferedWriter writer = Files.newBufferedWriter(csvPath, StandardCharsets.UTF_8,
+						StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+					 CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
+					printer.printRecord(listaDatos);
 				} catch (IOException e) {
-					// Manejar error
 					e.printStackTrace();
 				}
+				break;
 			}
-			case "json" -> {
-				
+			case "json": {
+				try {
+					Files.createDirectories(baseDir);
+				} catch (IOException ignored) {}
+				try {
+					DatoAmbiental dato = JSONHandler.convertirListaADato(listaDatos);
+					JSONHandler.agregarRegistroJSON(baseDir.resolve("datos.json").toString(), dato);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
 			}
-			case "xml" -> {
-				
+			case "xml": {
+				// Implementación XML pendiente
+				break;
 			}
-			case "rdf" -> {
-				
+			case "rdf": {
+				// Implementación RDF pendiente
+				break;
+			}
+			default: {
+				// Formato no soportado
+				break;
 			}
 		}
 	}
