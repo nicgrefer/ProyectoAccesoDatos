@@ -50,6 +50,14 @@
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
   </dependency>
+
+  <!-- DEPENDENCIA PARA SERVLET API (compilación); Tomcat la provee en runtime -->
+  <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>provided</scope>
+  </dependency>
 	
 	<!-- DEPENDENCIA PARA CSV -->
 	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->

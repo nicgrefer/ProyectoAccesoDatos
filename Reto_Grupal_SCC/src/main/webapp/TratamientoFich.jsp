@@ -15,7 +15,7 @@
 		</div>
 
 		<div class="content">
-			<form action="ServletFich" method="post">
+			<form action="ServletFich" method="post" enctype="multipart/form-data">
 				<section class="seccionIzquierda">
 					<h2>1. Selecciona el Formato</h2>
 					<div class="form-group">
@@ -46,6 +46,12 @@
 
 				<section class="seccionDerecha">
 					<h2>3. Datos del Registro</h2>
+					<div id="fileUpload" style="display:none; margin-bottom:12px;">
+						<label>
+							<span id="uploadLabel">Subir archivo:</span>
+							<input id="uploadFile" type="file" name="uploadFile" accept="application/json">
+						</label>
+					</div>
 					<%
 						for(int numero = 1; numero<=4; numero++) {
 						%>
@@ -73,6 +79,49 @@
 						<%}
 					%>
 				</section>
+
+				<script>
+					// Mostrar/ocultar campo de subida y actualizar label/accept según formato y acción
+					function toggleUpload() {
+						const lectura = document.querySelector('input[name="accion"][value="lectura"]');
+						const fileDiv = document.getElementById('fileUpload');
+						const formatoSel = document.querySelector('select[name="formato"]');
+						const formato = formatoSel ? formatoSel.value : '';
+						const uploadLabel = document.getElementById('uploadLabel');
+						const uploadInput = document.getElementById('uploadFile');
+
+						if (lectura && lectura.checked) {
+							// Mostrar y adaptar según formato
+							fileDiv.style.display = 'block';
+							if (formato === 'json') {
+								uploadLabel.textContent = 'Subir archivo JSON:';
+								uploadInput.accept = 'application/json';
+							} else if (formato === 'xml') {
+								uploadLabel.textContent = 'Subir archivo XML:';
+								uploadInput.accept = 'text/xml,application/xml';
+							} else if (formato === 'rdf') {
+								uploadLabel.textContent = 'Subir archivo RDF:';
+								uploadInput.accept = 'application/rdf+xml,text/turtle,*/*';
+							} else {
+								uploadLabel.textContent = 'Subir archivo:';
+								uploadInput.accept = '*/*';
+							}
+						} else {
+							fileDiv.style.display = 'none';
+							// limpiar valor del input si se oculta
+							if (uploadInput) uploadInput.value = '';
+						}
+					}
+
+					// Añadir listeners
+					document.addEventListener('DOMContentLoaded', function(){
+						const radios = document.querySelectorAll('input[name="accion"]');
+						radios.forEach(r=>r.addEventListener('change', toggleUpload));
+						const formatoSel = document.querySelector('select[name="formato"]');
+						if (formatoSel) formatoSel.addEventListener('change', toggleUpload);
+						toggleUpload();
+					});
+				</script>
 
 				<br>
 				<button name="boton" value="enviarTratamiento">Enviar</button>

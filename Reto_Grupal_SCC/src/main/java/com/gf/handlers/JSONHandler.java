@@ -1,18 +1,21 @@
 package com.gf.handlers;
 
-import com.gf.models.DatoAmbiental;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.gf.models.DatoAmbiental;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Handler para operaciones con archivos JSON
@@ -35,10 +38,21 @@ public class JSONHandler {
             return new ArrayList<>();
         }
 
+        // Si el archivo existe pero está vacío, devolver lista vacía
+        try {
+            if (Files.size(path) == 0L) return new ArrayList<>();
+        } catch (IOException e) {
+            // Si no podemos comprobar el tamaño, intentamos leer de todas formas
+        }
+
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             Type listType = new TypeToken<List<DatoAmbiental>>(){}.getType();
-            List<DatoAmbiental> datos = gson.fromJson(reader, listType);
-            return datos != null ? datos : new ArrayList<>();
+            try {
+                List<DatoAmbiental> datos = gson.fromJson(reader, listType);
+                return datos != null ? datos : new ArrayList<>();
+            } catch (com.google.gson.JsonSyntaxException jse) {
+                throw new IOException("Error al parsear JSON: formato inválido", jse);
+            }
         }
     }
     
