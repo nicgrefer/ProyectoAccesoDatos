@@ -8,6 +8,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resultados - Datos</title>
+<style>
+	table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+	th, td {
+		border: 1px solid #000;
+		padding: 8px;
+		text-align: left;
+	}
+	th {
+		background-color: #f2f2f2;
+		font-weight: bold;
+	}
+</style>
 </head>
 <body>
 	<div class="container">

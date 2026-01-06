@@ -181,11 +181,11 @@ public class ServletFich extends HttpServlet {
     private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
         switch (formatoFichero == null ? "" : formatoFichero.toLowerCase()) {
             case "xls": {
-                List<List<String>> excelData = new ArrayList<>();
-                excelData.add(listaDatos);
-                EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
-                        .sheet("Datos")
-                        .doWrite(excelData);
+                //List<List<String>> excelData = new ArrayList<>();
+                //excelData.add(listaDatos);
+                //EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
+                        //.sheet("Datos")
+                        //.doWrite(excelData);
                 break;
             }
             case "csv": {
