@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datosAmbientales>
+    <dato>
+        <dato1>España</dato1>
+        <dato2>2024</dato2>
+        <dato3>300</dato3>
+        <dato4>CO2</dato4>
+        <dato5>Emisiones de gases industriales</dato5>
+        <dato6>Toneladas</dato6>
+    </dato>
+    <dato>
+        <dato1>Francia</dato1>
+        <dato2>2024</dato2>
+        <dato3>250</dato3>
+        <dato4>CO2</dato4>
+        <dato5>Emisiones de energía limpia</dato5>
+        <dato6>Toneladas</dato6>
+    </dato>
+</datosAmbientales>

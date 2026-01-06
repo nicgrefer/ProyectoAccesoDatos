@@ -15,6 +15,7 @@ import org.apache.commons.csv.CSVPrinter;
 
 import com.alibaba.excel.EasyExcel;
 import com.gf.handlers.JSONHandler;
+import com.gf.handlers.XMLHandler;
 import com.gf.models.DatoAmbiental;
 
 import jakarta.servlet.ServletException;
@@ -117,8 +118,29 @@ public class ServletFich extends HttpServlet {
                 request.setAttribute("error", "Error leyendo JSON: " + e.getMessage());
                 return "TratamientoFich.jsp";
             }
-        } else if ("xml".equalsIgnoreCase(formato) || "rdf".equalsIgnoreCase(formato)) {
-            request.setAttribute("error", "Formato '" + formato + "' no implementado para lectura.");
+        } else if ("xml".equalsIgnoreCase(formato)) {
+            Part uploadPart = request.getPart("uploadFile");
+            if (uploadPart == null || uploadPart.getSize() == 0) {
+                request.setAttribute("error", "No se ha seleccionado ningún archivo XML para cargar.");
+                return "TratamientoFich.jsp";
+            }
+
+            Path target = filesDir.resolve("datos.xml");
+            try (java.io.InputStream in = uploadPart.getInputStream()) {
+                Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            try {
+                List<DatoAmbiental> registros = XMLHandler.leerXML(target.toString());
+                request.setAttribute("registros", registros);
+                return "MostrarXML.jsp";
+            } catch (IOException e) {
+                e.printStackTrace();
+                request.setAttribute("error", "Error leyendo XML: " + e.getMessage());
+                return "TratamientoFich.jsp";
+            }
+        } else if ("rdf".equalsIgnoreCase(formato)) {
+            request.setAttribute("error", "Formato 'RDF' no implementado para lectura.");
             return "TratamientoFich.jsp";
         }
 
@@ -144,8 +166,8 @@ public class ServletFich extends HttpServlet {
             listaDatos.add(param);
         }
 
-        if ("xml".equalsIgnoreCase(formato) || "rdf".equalsIgnoreCase(formato)) {
-            request.setAttribute("error", "Formato '" + formato + "' no implementado para escritura.");
+        if ("rdf".equalsIgnoreCase(formato)) {
+            request.setAttribute("error", "Formato 'RDF' no implementado para escritura.");
             return "TratamientoFich.jsp";
         }
 
@@ -159,11 +181,11 @@ public class ServletFich extends HttpServlet {
     private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
         switch (formatoFichero == null ? "" : formatoFichero.toLowerCase()) {
             case "xls": {
-                List<List<String>> excelData = new ArrayList<>();
-                excelData.add(listaDatos);
-                EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
-                        .sheet("Datos")
-                        .doWrite(excelData);
+                //List<List<String>> excelData = new ArrayList<>();
+                //excelData.add(listaDatos);
+                //EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
+                        //.sheet("Datos")
+                        //.doWrite(excelData);
                 break;
             }
             case "csv": {
@@ -192,7 +214,15 @@ public class ServletFich extends HttpServlet {
                 }
                 break;
             }
-            case "xml":
+            case "xml": {
+                try {
+                    DatoAmbiental dato = XMLHandler.convertirListaADato(listaDatos);
+                    XMLHandler.agregarRegistroXML(baseDir.resolve("datos.xml").toString(), dato);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             case "rdf": {
                 // Pendiente de implementación
                 break;
