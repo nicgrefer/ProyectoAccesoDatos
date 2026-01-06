@@ -133,7 +133,7 @@ public class ServletFich extends HttpServlet {
             try {
                 List<DatoAmbiental> registros = XMLHandler.leerXML(target.toString());
                 request.setAttribute("registros", registros);
-                return "MostrarJSON.jsp";
+                return "MostrarXML.jsp";
             } catch (IOException e) {
                 e.printStackTrace();
                 request.setAttribute("error", "Error leyendo XML: " + e.getMessage());
