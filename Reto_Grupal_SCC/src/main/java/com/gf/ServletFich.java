@@ -158,7 +158,7 @@ public class ServletFich extends HttpServlet {
 
     private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
         switch (formatoFichero == null ? "" : formatoFichero.toLowerCase()) {
-            case "xls": {
+            case "xls": { //sara
                 List<List<String>> excelData = new ArrayList<>();
                 excelData.add(listaDatos);
                 EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
@@ -183,7 +183,7 @@ public class ServletFich extends HttpServlet {
                 }
                 break;
             }
-            case "json": {
+            case "json": { // nico
                 try {
                     DatoAmbiental dato = JSONHandler.convertirListaADato(listaDatos);
                     JSONHandler.agregarRegistroJSON(baseDir.resolve("datos.json").toString(), dato);
@@ -192,7 +192,10 @@ public class ServletFich extends HttpServlet {
                 }
                 break;
             }
-            case "xml":
+            case "xml":{ // paula
+                // Pendiente de implementación
+                break;
+            }
             case "rdf": {
                 // Pendiente de implementación
                 break;
