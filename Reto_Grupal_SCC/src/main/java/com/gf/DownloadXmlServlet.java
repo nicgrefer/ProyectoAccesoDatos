@@ -11,9 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * Servlet para descargar el archivo XML generado en el servidor
- */
+
+// para descargar el archivo XML generado en el servidor
 @WebServlet("/DownloadXml")
 public class DownloadXmlServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;

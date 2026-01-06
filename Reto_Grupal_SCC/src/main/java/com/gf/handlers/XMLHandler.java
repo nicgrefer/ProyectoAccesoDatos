@@ -25,17 +25,11 @@ import org.xml.sax.SAXException;
 
 import com.gf.models.DatoAmbiental;
 
-/**
- * Handler para operaciones con archivos XML
- */
+
 public class XMLHandler {
     
-    /**
-     * Lee datos desde un archivo XML
-     * @param rutaArchivo Ruta completa del archivo
-     * @return Lista de DatoAmbiental
-     * @throws IOException Si hay error al leer
-     */
+
+    // leer datos desde un archivo XML
     public static List<DatoAmbiental> leerXML(String rutaArchivo) throws IOException {
         List<DatoAmbiental> datos = new ArrayList<>();
         Path path = Paths.get(rutaArchivo);
@@ -44,35 +38,35 @@ public class XMLHandler {
             return datos;
         }
         
-        // Si el archivo existe pero está vacío, devolver lista vacía
+        // si el archivo existe pero está vacío hay que devolver lista vacía
         try {
             if (Files.size(path) == 0L) {
                 return datos;
             }
         } catch (IOException e) {
-            // Si no podemos comprobar el tamaño, intentamos leer de todas formas
+            // ssi no podemos comprobar el tamaño tenemos quee intentamos leer de todas formas
         }
         
         try {
-            // Crear el parser DOM
+            
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             
-            // Parsear el archivo XML
+            // parsear el archivo XML
             Document document = builder.parse(new File(rutaArchivo));
             document.getDocumentElement().normalize();
             
-            // Obtener todos los elementos <dato>
+            // obtener todos los elementos de dato
             NodeList nodeList = document.getElementsByTagName("dato");
             
-            // Iterar sobre cada elemento <dato>
+            // iterar sobre cada elemento <dato>
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
                 
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     
-                    // Extraer los valores de cada campo
+                    // extraer los valores de cada campo
                     String dato1 = getElementValue(element, "dato1");
                     String dato2 = getElementValue(element, "dato2");
                     String dato3 = getElementValue(element, "dato3");
@@ -80,7 +74,7 @@ public class XMLHandler {
                     String dato5 = getElementValue(element, "dato5");
                     String dato6 = getElementValue(element, "dato6");
                     
-                    // Crear el objeto DatoAmbiental y añadirlo a la lista
+                    // crear el objeto DatoAmbiental y añadirlo a la lista
                     DatoAmbiental datoAmbiental = new DatoAmbiental(
                             dato1, dato2, dato3, dato4, dato5, dato6
                     );
@@ -95,12 +89,8 @@ public class XMLHandler {
         return datos;
     }
     
-    /**
-     * Método auxiliar para obtener el valor de un elemento XML
-     * @param element Elemento padre
-     * @param tagName Nombre de la etiqueta
-     * @return Valor del elemento o cadena vacía si no existe
-     */
+    
+    // obtener el valor de un elemento XML
     private static String getElementValue(Element element, String tagName) {
         NodeList nodeList = element.getElementsByTagName(tagName);
         if (nodeList.getLength() > 0) {
@@ -112,28 +102,24 @@ public class XMLHandler {
         return "";
     }
     
-    /**
-     * Escribe datos en un archivo XML
-     * @param rutaArchivo Ruta completa del archivo
-     * @param datos Lista de datos a escribir
-     * @throws IOException Si hay error al escribir
-     */
+
+    // escribir datos en un archivo XML
     public static void escribirXML(String rutaArchivo, List<DatoAmbiental> datos) throws IOException {
         try {
-            // Crear el documento XML
+            // ccrear el documento XML
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.newDocument();
             
-            // Crear el elemento raíz <datosAmbientales>
+            // crear el eelemento raíz dee datosAmbientales
             Element rootElement = document.createElement("datosAmbientales");
             document.appendChild(rootElement);
             
-            // Iterar sobre cada DatoAmbiental y crear elementos <dato>
+            // iterar sobre cada DatoAmbiental y crear elementos dato
             for (DatoAmbiental dato : datos) {
                 Element datoElement = document.createElement("dato");
                 
-                // Crear elementos hijos para cada campo
+                // crear elementos hijos para cada campo
                 Element dato1 = document.createElement("dato1");
                 dato1.setTextContent(dato.getDato1() != null ? dato.getDato1() : "");
                 datoElement.appendChild(dato1);
@@ -158,24 +144,24 @@ public class XMLHandler {
                 dato6.setTextContent(dato.getDato6() != null ? dato.getDato6() : "");
                 datoElement.appendChild(dato6);
                 
-                // Añadir el elemento <dato> al elemento raíz
+                // añadir el elemento dato al elemento raíz
                 rootElement.appendChild(datoElement);
             }
             
-            // Configurar el transformer para escribir el XML con formato
+            // configurar el transformer para escribir el XML con formato
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             
-            // Configurar propiedades para formato bonito (indentación)
+            // configurar propiedades paraaa formato bonito (indentación)
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             
-            // Crear la fuente DOM y el resultado
+            
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(new File(rutaArchivo));
             
-            // Escribir el XML al archivo
+            // escribir el XML al archivo
             transformer.transform(source, result);
             
         } catch (ParserConfigurationException | javax.xml.transform.TransformerException e) {
@@ -183,28 +169,21 @@ public class XMLHandler {
         }
     }
     
-    /**
-     * Añade un nuevo registro al archivo XML
-     * @param rutaArchivo Ruta completa del archivo
-     * @param nuevoDato Dato a añadir
-     * @throws IOException Si hay error en la operación
-     */
+ 
+    // añadir un nuevo registro al archivo XML
     public static void agregarRegistroXML(String rutaArchivo, DatoAmbiental nuevoDato) throws IOException {
-        // Leer datos existentes
+        // leer datos existentes
         List<DatoAmbiental> datos = leerXML(rutaArchivo);
         
-        // Agregar nuevo dato
+        // agregar nuevo dato
         datos.add(nuevoDato);
         
-        // Escribir todos los datos
+        // escribir todos los datos
         escribirXML(rutaArchivo, datos);
     }
     
-    /**
-     * Convierte una lista de String a un DatoAmbiental
-     * @param listaDatos Lista con 6 elementos
-     * @return DatoAmbiental creado
-     */
+
+    // convierte una lista de String a un DatoAmbiental
     public static DatoAmbiental convertirListaADato(List<String> listaDatos) {
         if (listaDatos == null || listaDatos.size() != 6) {
             throw new IllegalArgumentException("La lista debe contener exactamente 6 elementos");
