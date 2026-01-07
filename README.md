@@ -22,8 +22,8 @@ Este proyecto es una aplicación web desarrollada en Java EE que permite gestion
 |---------|---------|-----------|----------------------|
 | JSON    | ✅      | ✅        | JSONHandler.java |
 | XML     | ✅      | ✅        | XMLHandler.java |
-| CSV     | ❌      | ✅        | En ServletFich.java (línea 191) |
-| XLS     | ❌      | ✅        | ExcelHandler.java |
+| CSV     | ✅      | ✅        | CSVHandler.java |
+| XLS     | ✅      | ✅        | ExcelHandler.java |
 | RDF     | ❌      | ❌        | No implementado |
 
 ---
@@ -57,11 +57,13 @@ Reto_Grupal_SCC/
 │   ├── handlers/
 │   │   ├── JSONHandler.java
 │   │   ├── XMLHandler.java
+│   │   ├── CSVHandler.java
 │   │   ├── ExcelHandler.java
 │   │   └── DatoAmbientalListener.java
 │   ├── ServletFich.java
 │   ├── DownloadJsonServlet.java
 │   ├── DownloadXmlServlet.java
+│   ├── DownloadCsvServlet.java
 │   └── DownloadExcelServlet.java
 ├── src/main/webapp/
 │   ├── WEB-INF/web.xml
@@ -70,6 +72,8 @@ Reto_Grupal_SCC/
 │   ├── AccesoDatosA.jsp
 │   ├── MostrarJSON.jsp
 │   ├── MostrarXML.jsp
+│   ├── MostrarCSV.jsp
+│   ├── MostrarExcel.jsp
 │   └── Error.jsp
 ├── pom.xml
 └── README.md
@@ -119,7 +123,7 @@ http://localhost:8080/Reto_Grupal_SCC/TratamientoFich.jsp
 ## Uso de la Aplicación
 
 ### Lectura de Datos
-1. Seleccionar formato (JSON o XML)
+1. Seleccionar formato (JSON, XML, CSV o XLS)
 2. Seleccionar operación "Lectura"
 3. Subir archivo
 4. Visualizar datos en tabla
@@ -140,6 +144,7 @@ http://localhost:8080/Reto_Grupal_SCC/TratamientoFich.jsp
 | `/ServletFich` | GET | Respuesta de texto plano |
 | `/DownloadJson` | GET | Descarga archivo datos.json |
 | `/DownloadXml` | GET | Descarga archivo datos.xml |
+| `/DownloadCsv` | GET | Descarga archivo datos.csv |
 | `/DownloadExcel` | GET | Descarga archivo datos.xlsx |
 
 ---
@@ -169,18 +174,22 @@ Los archivos se almacenan en: `webapp/files/`
 - `agregarRegistroXML(String rutaArchivo, DatoAmbiental nuevoDato)` - Añade registro
 - `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
 
+### CSVHandler.java
+- `leerCSV(String rutaArchivo)` - Lee datos desde CSV usando Apache Commons CSV
+- `escribirCSV(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe datos a CSV
+
 ### ExcelHandler.java
-- `leerExcel(String rutaArchivo)` - Lee datos desde Excel (XLSX)
-- `escribirExcel(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe datos a Excel
+- `leerExcel(String rutaArchivo)` - Lee datos desde Excel (XLSX) usando Apache POI
+- `escribirExcel(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe datos a Excel con cabeceras
 - `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
 - `convertirDatoALista(DatoAmbiental dato)` - Convierte objeto a lista
 
 ### DatoAmbientalListener.java
-- Listener para EasyExcel que permite leer archivos Excel
+- Listener para EasyExcel que permite leer archivos Excel (legacy)
 
 ### ServletFich.java
 - CSV: Implementa escritura con Apache Commons CSV (append mode)
-- XLS: Implementa escritura con EasyExcel
+- XLS: Implementa escritura con EasyExcel y cabeceras
 - RDF: No implementado
 
 ---
