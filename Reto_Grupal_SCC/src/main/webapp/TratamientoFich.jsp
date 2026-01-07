@@ -20,7 +20,8 @@
 					<h2>1. Selecciona el Formato</h2>
 					<div class="form-group">
 						<span>Formato del fichero:</span>
-						<select name="formato">
+						<select name="formato">	
+							<option value="">Selecciona un formato</option>
 							<option value="xls">XLS</option>
 							<option value="csv">CSV</option>
 							<option value="json">JSON</option>
