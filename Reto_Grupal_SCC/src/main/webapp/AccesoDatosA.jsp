@@ -77,6 +77,11 @@
 				<!-- Botón para descargar JSON (solo si el formato seleccionado fue JSON) -->
 				<a href="DownloadJson" style="margin-left:12px;">Descargar JSON</a>
 				<%
+					} else if (formato != null && "xml".equalsIgnoreCase(formato)) {
+				%>
+				<!-- Botón para descargar XML (solo si el formato seleccionado fue XML) -->
+				<a href="DownloadXml" style="margin-left:12px;">Descargar XML</a>
+				<%
 					}
 				%>
 			</div>
