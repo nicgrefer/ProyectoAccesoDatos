@@ -22,24 +22,19 @@ public class ExcelHandler {
      * @return Lista de objetos DatoAmbiental leída desde el archivo
      * @throws IOException Si hay un error al leer el archivo
      */
-    public static List<DatoAmbiental> leerExcel(String rutaArchivo) throws IOException {
+	public static List<DatoAmbiental> leerExcel(String rutaArchivo) throws IOException {
         Path path = Paths.get(rutaArchivo);
-        if (!Files.exists(path)) {
-            return null;  // Si el archivo no existe, devolvemos null
-        }
-
-        // Si el archivo está vacío, devolvemos null
-        try {
-            if (Files.size(path) == 0L) return null;
-        } catch (IOException e) {
-            // Si no podemos comprobar el tamaño, intentamos leer el archivo igualmente
+        if (!Files.exists(path) || Files.size(path) == 0L) {
+            return new ArrayList<>();
         }
 
         try {
-            // Usamos EasyExcel para leer el archivo Excel
-            return EasyExcel.read(rutaArchivo, DatoAmbiental.class, new DatoAmbientalListener()).sheet().doReadSync();
+            return EasyExcel.read(rutaArchivo)
+                    .head(DatoAmbiental.class)
+                    .sheet()
+                    .doReadSync();
         } catch (Exception e) {
-            throw new IOException("Error al leer el archivo Excel: " + e.getMessage(), e);
+            throw new IOException("Error al leer el archivo Excel", e);
         }
     }
 
