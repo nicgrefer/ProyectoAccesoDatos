@@ -72,16 +72,32 @@
 				</form>
 				<%
 					String formato = (String) request.getAttribute("formato");
-					if (formato != null && "json".equalsIgnoreCase(formato)) {
+					if (formato != null) {
+						String downloadUrl = null;
+						String fileName = null;
+						if ("json".equalsIgnoreCase(formato)) {
+							downloadUrl = "DownloadJson";
+							fileName = "datos.json";
+						} else if ("xml".equalsIgnoreCase(formato)) {
+							downloadUrl = "DownloadXml";
+							fileName = "datos.xml";
+						}
+						
+						if (downloadUrl != null) {
+							java.nio.file.Path filePath = java.nio.file.Paths.get(
+								getServletContext().getRealPath("/files"), fileName
+							);
+							if (java.nio.file.Files.exists(filePath)) {
 				%>
-				<!-- Botón para descargar JSON (solo si el formato seleccionado fue JSON) -->
-				<a href="DownloadJson" style="margin-left:12px;">Descargar JSON</a>
+				<a href="<%= downloadUrl %>" style="margin-left:12px;">Descargar <%= fileName.substring(0, fileName.lastIndexOf('.')).toUpperCase() %></a>
 				<%
 					} else if (formato != null && "xml".equalsIgnoreCase(formato)) {
 				%>
 				<!-- Botón para descargar XML (solo si el formato seleccionado fue XML) -->
 				<a href="DownloadXml" style="margin-left:12px;">Descargar XML</a>
 				<%
+							}
+						}
 					}
 				%>
 			</div>

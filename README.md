@@ -1,12 +1,12 @@
-# 🌍 Sistema de Manejo de Ficheros - Datos Ambientales
+# Reto Grupal - Sistema de Gestión de Datos
 
-Aplicación web JEE para la lectura y escritura de datos ambientales relacionados con los Objetivos de Desarrollo Sostenible (ODS) en múltiples formatos de archivo.
+Aplicación web Java EE para la lectura y escritura de datos en múltiples formatos de archivo.
 
 ---
 
-## 📋 Descripción
+## Descripción
 
-Este proyecto es una aplicación web desarrollada en Java EE que permite gestionar datos ambientales (emisiones de CO2, temperatura, fuentes de energía) mediante diferentes formatos de ficheros: JSON, CSV, XML, XLS (Excel) y RDF.
+Este proyecto es una aplicación web desarrollada en Java EE que permite gestionar datos genéricos mediante diferentes formatos de ficheros: JSON, CSV, XML, XLS y RDF.
 
 **Centro:** Gregorio Fernández  
 **Curso:** 2º DAM  
@@ -14,240 +14,197 @@ Este proyecto es una aplicación web desarrollada en Java EE que permite gestion
 
 ---
 
-## ✨ Características
+## Estado del Proyecto
 
-- ✅ Lectura de ficheros en 5 formatos diferentes
-- ✅ Escritura/añadir registros en 5 formatos diferentes
-- ✅ Visualización de datos en tabla HTML
-- ✅ Manejo robusto de errores
-- ✅ Interfaz web intuitiva y responsive
-- ✅ Validación de datos
-- ✅ Datos relacionados con ODS (Objetivos de Desarrollo Sostenible)
+### Formatos Implementados
+
+| Formato | Lectura | Escritura | Handler/Localización |
+|---------|---------|-----------|----------------------|
+| JSON    | ✅      | ✅        | JSONHandler.java |
+| XML     | ✅      | ✅        | XMLHandler.java |
+| CSV     | ❌      | ✅        | En ServletFich.java (línea 191) |
+| XLS     | ❌      | ✅        | ExcelHandler.java |
+| RDF     | ❌      | ❌        | No implementado |
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 ### Backend
-- **Java 11**
-- **Java EE (Servlet API 4.0)**
+- **Java 17**
+- **Jakarta EE (Servlet API 6.0)**
 - **JSP (JavaServer Pages)**
 
-### Librerías para Manejo de Ficheros
+### Librerías
 - **Gson 2.10.1** - Procesamiento JSON
-- **OpenCSV 5.7.1** - Procesamiento CSV
-- **Apache POI 5.2.3** - Procesamiento Excel (XLS/XLSX)
-- **Apache Jena 4.9.0** - Procesamiento RDF
+- **Apache Commons CSV 1.14.1** - Procesamiento CSV
+- **EasyExcel 4.0.3** - Procesamiento Excel
 - **DOM Parser** - Procesamiento XML (incluido en Java)
 
 ### Herramientas
 - **Maven** - Gestión de dependencias
-- **Apache Tomcat 9+** - Servidor de aplicaciones
+- **Apache Tomcat 10+** - Servidor de aplicaciones
 
 ---
 
-##  Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
-manejo-ficheros/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── models/
-│   │   │   │   └── DatoAmbiental.java
-│   │   │   ├── servlets/
-│   │   │   │   └── FileHandlerServlet.java
-│   │   │   └── utils/
-│   │   │       ├── JSONHandler.java
-│   │   │       ├── CSVHandler.java
-│   │   │       ├── XMLHandler.java
-│   │   │       ├── XLSHandler.java
-│   │   │       └── RDFHandler.java
-│   │   └── webapp/
-│   │       ├── WEB-INF/
-│   │       │   ├── web.xml
-│   │       │   └── data/  (archivos generados)
-│   │       ├── TratamientoFich.jsp
-│   │       ├── AccesoDatosA.jsp
-│   │       └── Error.jsp
-│   └── test/
+Reto_Grupal_SCC/
+├── src/main/java/com/gf/
+│   ├── models/
+│   │   └── DatoAmbiental.java
+│   ├── handlers/
+│   │   ├── JSONHandler.java
+│   │   ├── XMLHandler.java
+│   │   ├── ExcelHandler.java
+│   │   └── DatoAmbientalListener.java
+│   ├── ServletFich.java
+│   ├── DownloadJsonServlet.java
+│   ├── DownloadXmlServlet.java
+│   └── DownloadExcelServlet.java
+├── src/main/webapp/
+│   ├── WEB-INF/web.xml
+│   ├── files/ (archivos generados)
+│   ├── TratamientoFich.jsp
+│   ├── AccesoDatosA.jsp
+│   ├── MostrarJSON.jsp
+│   ├── MostrarXML.jsp
+│   └── Error.jsp
 ├── pom.xml
 └── README.md
 ```
 
 ---
 
-## 🚀 Instalación y Ejecución
+## Modelo de Datos
 
-### Requisitos Previos
-- JDK 11 o superior
-- Apache Maven 3.6+
-- Apache Tomcat 9+
-- IDE (Eclipse, IntelliJ IDEA, NetBeans)
-
-### Pasos de Instalación
-
-1. **Clonar el repositorio**
-```bash
-git clone [URL_DEL_REPOSITORIO]
-cd manejo-ficheros
+```java
+public class DatoAmbiental {
+    private String dato1;
+    private String dato2;
+    private String dato3;
+    private String dato4;
+    private String dato5;
+    private String dato6;
+}
 ```
 
-2. **Compilar el proyecto con Maven**
+---
+
+## Instalación y Ejecución
+
+### Requisitos Previos
+- JDK 17 o superior
+- Apache Maven 3.6+
+- Apache Tomcat 10+
+
+### Pasos
+
+1. **Compilar el proyecto**
 ```bash
 mvn clean install
 ```
 
-3. **Desplegar en Tomcat**
-   - Copiar el archivo `target/manejo-ficheros.war` a la carpeta `webapps` de Tomcat
-   - O configurar el servidor en tu IDE y ejecutar directamente
+2. **Desplegar en Tomcat**
+- Copiar `target/Reto_Grupal_SCC.war` a la carpeta `webapps` de Tomcat
 
-4. **Acceder a la aplicación**
+3. **Acceder a la aplicación**
 ```
-http://localhost:8080/manejo-ficheros/
+http://localhost:8080/Reto_Grupal_SCC/TratamientoFich.jsp
 ```
 
 ---
 
-## 💻 Uso de la Aplicación
+## Uso de la Aplicación
 
 ### Lectura de Datos
-1. Seleccionar el formato del fichero (JSON, CSV, XML, XLS, RDF)
-2. Seleccionar la operación "Lectura"
-3. Hacer clic en "Procesar"
-4. Visualizar los datos en forma de tabla
+1. Seleccionar formato (JSON o XML)
+2. Seleccionar operación "Lectura"
+3. Subir archivo
+4. Visualizar datos en tabla
 
 ### Escritura de Datos
-1. Seleccionar el formato del fichero
-2. Seleccionar la operación "Escritura"
-3. Completar el formulario con los datos:
-   - ID (obligatorio)
-   - País (obligatorio)
-   - Año (obligatorio)
-   - Emisión CO2 (opcional)
-   - Temperatura (opcional)
-   - Fuente de Energía (opcional)
-4. Hacer clic en "Procesar"
-5. Ver confirmación del registro guardado
+1. Seleccionar formato (JSON, XML, CSV o XLS)
+2. Seleccionar operación "Escritura"
+3. Completar los 6 campos de datos
+4. Enviar y descargar archivo generado
 
 ---
 
-## 📊 Formato de Datos
+## API de Servlets
 
-### Modelo de Datos
-```java
-public class DatoAmbiental {
-    private String id;
-    private String pais;
-    private String anio;
-    private double emisionCO2;  // toneladas
-    private double temperatura; // grados celsius
-    private String fuenteEnergia;
-}
-```
-
-### Ejemplos de Formatos
-
-**JSON:**
-```json
-{
-  "id": "001",
-  "pais": "España",
-  "anio": "2023",
-  "emisionCO2": 1450.75,
-  "temperatura": 15.8,
-  "fuenteEnergia": "Solar"
-}
-```
-
-**CSV:**
-```csv
-ID,Pais,Anio,EmisionCO2,Temperatura,FuenteEnergia
-001,España,2023,1450.75,15.8,Solar
-```
-
-**XML:**
-```xml
-<dato>
-  <id>001</id>
-  <pais>España</pais>
-  <anio>2023</anio>
-  <emisionCO2>1450.75</emisionCO2>
-  <temperatura>15.8</temperatura>
-  <fuenteEnergia>Solar</fuenteEnergia>
-</dato>
-```
+| Servlet | Método | Descripción |
+|---------|--------|-------------|
+| `/ServletFich` | POST | Procesa lectura/escritura de archivos |
+| `/ServletFich` | GET | Respuesta de texto plano |
+| `/DownloadJson` | GET | Descarga archivo datos.json |
+| `/DownloadXml` | GET | Descarga archivo datos.xml |
+| `/DownloadExcel` | GET | Descarga archivo datos.xlsx |
 
 ---
 
-## 🔧 Configuración
+## Archivos de Datos
 
-### Ubicación de Archivos
-Los archivos se almacenan en: `WEB-INF/data/`
-- `datos_ambientales.json`
-- `datos_ambientales.csv`
-- `datos_ambientales.xml`
-- `datos_ambientales.xlsx`
-- `datos_ambientales.rdf`
-
-### Configuración del Servlet
-El servlet está mapeado en: `/FileHandler`
+Los archivos se almacenan en: `webapp/files/`
+- `datos.json`
+- `datos.xml`
+- `datos.csv`
+- `datos.xlsx`
 
 ---
 
-## 🐛 Manejo de Errores
+## Funcionalidades por Handler
 
-La aplicación maneja los siguientes tipos de errores:
+### JSONHandler.java
+- `leerJSON(String rutaArchivo)` - Lee lista de DatoAmbiental desde JSON
+- `escribirJSON(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe lista completa
+- `agregarRegistroJSON(String rutaArchivo, DatoAmbiental nuevoDato)` - Añade un registro
+- `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
+- `convertirDatoALista(DatoAmbiental dato)` - Convierte objeto a lista
+
+### XMLHandler.java
+- `leerXML(String rutaArchivo)` - Lee datos desde XML
+- `escribirXML(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe datos a XML
+- `agregarRegistroXML(String rutaArchivo, DatoAmbiental nuevoDato)` - Añade registro
+- `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
+
+### ExcelHandler.java
+- `leerExcel(String rutaArchivo)` - Lee datos desde Excel (XLSX)
+- `escribirExcel(String rutaArchivo, List<DatoAmbiental> datos)` - Escribe datos a Excel
+- `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
+- `convertirDatoALista(DatoAmbiental dato)` - Convierte objeto a lista
+
+### DatoAmbientalListener.java
+- Listener para EasyExcel que permite leer archivos Excel
+
+### ServletFich.java
+- CSV: Implementa escritura con Apache Commons CSV (append mode)
+- XLS: Implementa escritura con EasyExcel
+- RDF: No implementado
+
+---
+
+## Errores Manejados
+
 - Archivo no encontrado
 - Formato de datos incorrecto
-- Errores de lectura/escritura
-- Validación de campos obligatorios
-- Errores de parseo
-
-Todos los errores se redirigen a `Error.jsp` con información detallada.
+- Campos obligatorios vacíos
+- Errores de parseo JSON/XML
+- Parámetros incompletos
 
 ---
 
-## 👥 Equipo de Desarrollo
+## Equipo de Desarrollo
 
-- Sara - XMLHandler, XLSHandler
+- Paula - XMLHandler
 - Nicolás - JSONHandler
-- [Nombre del Miembro 2] -CSVHandler
-- [Nombre del Miembro 3] - RDFHandler, Servlet
-- [Nombre del Miembro 4] - JSPs, Pruebas
+- Gabreil - CSV (integrado en servlet)
+- Juan - JSPs y servlets de descarga
+- Sara - Excel (ExcelHandler + DownloadExcelServlet)
 
 ---
 
-## 📝 Evaluación
+## Licencia
 
-**Criterios de Evaluación:**
-- Implementación lectura (2.5 puntos)
-- Funcionamiento lectura (2.5 puntos)
-- Implementación escritura (2.5 puntos)
-- Funcionamiento escritura (2.5 puntos)
-
----
-
-##  Enlaces Útiles
-
-- Documentación Gson
-- Documentación OpenCSV
-- Documentación Apache POI
-- Documentación Apache Jena
-- ODS - Objetivos de Desarrollo Sostenible
-
----
-
-## 📄 Licencia
-
-Este proyecto es un trabajo académico para el Centro de Enseñanza "Gregorio Fernández".
-
-## 📧 Contacto
-
-Para consultas sobre el proyecto, contactar con los miembros del equipo o la profesora de la asignatura.
-
----
-
-**Centro de Enseñanza Concertada "Gregorio Fernández"**  
-2º Desarrollo de Aplicaciones Multiplataforma  
-Acceso a Datos - Unidad 2
+[Licencia MIT](LICENSE)

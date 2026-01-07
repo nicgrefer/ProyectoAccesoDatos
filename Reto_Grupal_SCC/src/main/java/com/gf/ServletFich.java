@@ -26,15 +26,31 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
+/**
+ * Servlet encargado de gestionar la carga y descarga de archivos en diferentes formatos.
+ * Los formatos soportados son CSV, JSON, XML y XLS (Excel).
+ * Permite tanto la lectura de archivos como la escritura de nuevos archivos.
+ */
 @WebServlet("/ServletFich")
 @MultipartConfig
 public class ServletFich extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor por defecto del ServletFich.
+     */
     public ServletFich() {
         super();
     }
 
+    /**
+     * Método que maneja las peticiones GET. En este caso, solo devuelve un mensaje de texto indicando que se debe usar POST.
+     *
+     * @param request La solicitud HTTP.
+     * @param response La respuesta HTTP.
+     * @throws ServletException Si ocurre un error al procesar la solicitud.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -42,11 +58,21 @@ public class ServletFich extends HttpServlet {
         response.getWriter().write("ServletFich OK - use POST to enviarTratamiento");
     }
 
+    /**
+     * Método que maneja las peticiones POST. Dependiendo de la acción solicitada (lectura o escritura),
+     * dirige el flujo a los métodos correspondientes.
+     *
+     * @param request La solicitud HTTP.
+     * @param response La respuesta HTTP.
+     * @throws ServletException Si ocurre un error al procesar la solicitud.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        String pagina = "TratamientoFich.jsp";
+        String pagina = "TratamientoFich.jsp";  // Página de retorno por defecto
 
+        // Obtiene el parámetro 'boton' que determina qué acción se realizará
         String boton = request.getParameter("boton");
         if (boton == null) {
             request.setAttribute("error", "Parámetros incompletos");
@@ -65,10 +91,11 @@ public class ServletFich extends HttpServlet {
             return;
         }
 
+        // Obtiene el formato y la acción (lectura o escritura)
         String formatoFichero = request.getParameter("formato");
         String leerEscribir = request.getParameter("accion");
 
-        // Crear directorio de archivos
+        // Crea el directorio de archivos si no existe
         String filesRealPath = request.getServletContext().getRealPath("/files");
         Path filesDir = Paths.get(filesRealPath == null ? "files" : filesRealPath);
         try {
@@ -76,13 +103,14 @@ public class ServletFich extends HttpServlet {
         } catch (IOException ignored) {
         }
 
+        // Determina si la acción es de lectura o escritura
         if ("lectura".equalsIgnoreCase(leerEscribir)) {
             pagina = handleLectura(request, filesDir, formatoFichero);
         } else {
             pagina = handleEscritura(request, filesDir, formatoFichero);
         }
 
-        // Asegurar que siempre hay una página a la que reenviar
+        // Asegura que siempre haya una página a la que redirigir
         if (pagina == null || pagina.trim().isEmpty()) {
             pagina = "TratamientoFich.jsp";
         }
@@ -90,6 +118,17 @@ public class ServletFich extends HttpServlet {
         request.getRequestDispatcher(pagina).forward(request, response);
     }
 
+    /**
+     * Maneja la lectura de archivos. Dependiendo del formato, procesa el archivo
+     * y carga los datos en el atributo 'registros'.
+     *
+     * @param request La solicitud HTTP.
+     * @param filesDir El directorio donde se almacenan los archivos.
+     * @param formato El formato del archivo a leer (JSON, XML, RDF).
+     * @return La página a la que redirigir después de procesar la lectura.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     * @throws ServletException Si ocurre un error de servlet.
+     */
     private String handleLectura(HttpServletRequest request, Path filesDir, String formato) 
             throws IOException, ServletException {
         if (formato == null) {
@@ -144,18 +183,27 @@ public class ServletFich extends HttpServlet {
             return "TratamientoFich.jsp";
         }
 
-        // Formatos no implementados para lectura
+        // Si el formato no es válido o no está implementado
         request.setAttribute("error", "Lectura para formato '" + formato + "' no implementada.");
         return "TratamientoFich.jsp";
     }
 
+    /**
+     * Maneja la escritura de datos en archivos. Dependiendo del formato seleccionado,
+     * los datos se escriben en el archivo correspondiente (CSV, JSON, XML, XLS).
+     *
+     * @param request La solicitud HTTP.
+     * @param filesDir El directorio donde se guardarán los archivos.
+     * @param formato El formato de archivo para escribir (CSV, JSON, XML, XLS).
+     * @return La página a la que redirigir después de procesar la escritura.
+     */
     private String handleEscritura(HttpServletRequest request, Path filesDir, String formato) {
         if (formato == null) {
             request.setAttribute("error", "Seleccione un formato");
             return "TratamientoFich.jsp";
         }
 
-        // Validar campos
+        // Validación de los campos de entrada
         List<String> listaDatos = new ArrayList<>(6);
         for (int i = 1; i <= 6; i++) {
             String param = request.getParameter("dato" + i);
@@ -171,21 +219,36 @@ public class ServletFich extends HttpServlet {
             return "TratamientoFich.jsp";
         }
 
-        // Procesar datos
+        // Procesar los datos y escribir en el archivo correspondiente
         procesarDatos(listaDatos, formato, filesDir);
         request.setAttribute("lista", listaDatos);
         request.setAttribute("formato", formato);
         return "AccesoDatosA.jsp";
     }
 
+    /**
+     * Procesa los datos y los escribe en el archivo correspondiente según el formato seleccionado.
+     * Los formatos soportados son XLS (Excel), CSV, JSON y XML.
+     *
+     * @param listaDatos Los datos a escribir en el archivo.
+     * @param formatoFichero El formato de archivo para guardar (XLS, CSV, JSON, XML).
+     * @param baseDir El directorio donde se guardarán los archivos.
+     */
     private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
         switch (formatoFichero == null ? "" : formatoFichero.toLowerCase()) {
             case "xls": {
-                //List<List<String>> excelData = new ArrayList<>();
-                //excelData.add(listaDatos);
-                //EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
-                        //.sheet("Datos")
-                        //.doWrite(excelData);
+                // Preparar datos para Excel
+                List<List<String>> excelData = new ArrayList<>();
+                excelData.add(listaDatos);
+
+                // Escribir en Excel usando EasyExcel
+                try {
+                    EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
+                            .sheet("Datos")
+                            .doWrite(excelData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             }
             case "csv": {
@@ -224,7 +287,7 @@ public class ServletFich extends HttpServlet {
                 break;
             }
             case "rdf": {
-                // Pendiente de implementación
+                // Implementación pendiente para RDF
                 break;
             }
             default: {

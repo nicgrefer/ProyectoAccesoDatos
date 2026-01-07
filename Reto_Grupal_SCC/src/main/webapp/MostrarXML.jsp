@@ -64,7 +64,16 @@
 
             <div style="margin-top:12px;">
                 <a href="TratamientoFich.jsp">Volver</a>
+                <%
+                    java.nio.file.Path xmlPath = java.nio.file.Paths.get(
+                        getServletContext().getRealPath("/files"), "datos.xml"
+                    );
+                    if (java.nio.file.Files.exists(xmlPath)) {
+                %>
                 <a href="DownloadXml" style="margin-left:12px;">Descargar XML</a>
+                <%
+                    }
+                %>
             </div>
         </div>
     </div>
