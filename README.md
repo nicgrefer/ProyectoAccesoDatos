@@ -200,7 +200,7 @@ Los archivos se almacenan en: `webapp/files/`
 - Paula - XMLHandler
 - Nicolás - JSONHandler
 - Gabreil - CSV (integrado en servlet)
-- [Miembro 4] - JSPs y servlets de descarga
+- Juan - JSPs y servlets de descarga
 - Sara - Excel (ExcelHandler + DownloadExcelServlet)
 
 ---
