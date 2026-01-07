@@ -2,6 +2,7 @@ package com.gf.models;
 
 import java.io.Serializable;
 import java.util.Objects;
+import com.alibaba.excel.annotation.ExcelProperty;
 
 /**
  * Clase modelo que representa un dato ambiental.
@@ -14,11 +15,17 @@ public class DatoAmbiental implements Serializable {
     private static final long serialVersionUID = 1L;
     
     // Atributos del dato ambiental
+    @ExcelProperty("DATO 1")
     private String dato1;
+    @ExcelProperty("DATO 2")
     private String dato2;
+    @ExcelProperty("DATO 3")
     private String dato3;
+    @ExcelProperty("DATO 4")
     private String dato4;
+    @ExcelProperty("DATO 5")
     private String dato5;
+    @ExcelProperty("DATO 6")
     private String dato6;
     
     // Constructor vacío

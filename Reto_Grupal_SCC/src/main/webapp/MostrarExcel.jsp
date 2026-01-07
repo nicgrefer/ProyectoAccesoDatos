@@ -117,7 +117,16 @@
 
             <div style="margin-top:12px;">
                 <a href="TratamientoFich.jsp">Volver</a>
+                <%
+                    java.nio.file.Path excelPath = java.nio.file.Paths.get(
+                        getServletContext().getRealPath("/files"), "datos.xlsx"
+                    );
+                    if (java.nio.file.Files.exists(excelPath)) {
+                %>
                 <a href="DownloadExcel" style="margin-left:12px;">Descargar Excel</a>
+                <%
+                    }
+                %>
             </div>
         </div>
     </div>

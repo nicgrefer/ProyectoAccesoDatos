@@ -214,13 +214,18 @@ public class ServletFich extends HttpServlet {
             }
 
             try {
-                // Usamos ExcelHandler para leer el archivo Excel
+                System.out.println("ServletFich: Leyendo archivo Excel...");
                 List<DatoAmbiental> registros = ExcelHandler.leerExcel(target.toString());
-                if (registros != null) {
+                System.out.println("ServletFich: Registros leidos: " + (registros != null ? registros.size() : "null"));
+                for (DatoAmbiental r : registros) {
+                    System.out.println("ServletFich: " + r);
+                }
+                
+                if (registros != null && !registros.isEmpty()) {
                     request.setAttribute("registros", registros);
-                    return "MostrarExcel.jsp"; // Mostrar los registros leídos en una página
+                    return "MostrarExcel.jsp";
                 } else {
-                    request.setAttribute("error", "El archivo Excel está vacío o no se pudo leer.");
+                    request.setAttribute("error", "El archivo Excel no contiene datos o no se pudo leer.");
                     return "TratamientoFich.jsp";
                 }
             } catch (IOException e) {
@@ -289,15 +294,12 @@ public class ServletFich extends HttpServlet {
     private void procesarDatos(List<String> listaDatos, String formatoFichero, Path baseDir) {
         switch (formatoFichero == null ? "" : formatoFichero.toLowerCase()) {
             case "xls": {
-                // Preparar datos para Excel
-                List<List<String>> excelData = new ArrayList<>();
-                excelData.add(listaDatos);
-
-                // Escribir en Excel usando EasyExcel
+                DatoAmbiental dato = new DatoAmbiental(
+                    listaDatos.get(0), listaDatos.get(1), listaDatos.get(2),
+                    listaDatos.get(3), listaDatos.get(4), listaDatos.get(5)
+                );
                 try {
-                    EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
-                            .sheet("Datos")
-                            .doWrite(excelData);
+                    ExcelHandler.escribirExcel(baseDir.resolve("datos.xlsx").toString(), java.util.List.of(dato));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

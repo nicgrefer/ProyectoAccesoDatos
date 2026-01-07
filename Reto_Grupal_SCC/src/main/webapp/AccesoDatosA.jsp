@@ -84,6 +84,9 @@
 						} else if ("csv".equalsIgnoreCase(formato)) {
 							downloadUrl = "DownloadCsv";
 							fileName = "datos.csv";
+						} else if ("xls".equalsIgnoreCase(formato) || "xlsx".equalsIgnoreCase(formato)) {
+							downloadUrl = "DownloadExcel";
+							fileName = "datos.xlsx";
 						}
 						
 						if (downloadUrl != null) {

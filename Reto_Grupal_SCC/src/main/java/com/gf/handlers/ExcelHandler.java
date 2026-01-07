@@ -1,6 +1,8 @@
 package com.gf.handlers;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.gf.models.DatoAmbiental;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,19 +28,57 @@ public class ExcelHandler {
     public static List<DatoAmbiental> leerExcel(String rutaArchivo) throws IOException {
         Path path = Paths.get(rutaArchivo);
         if (!Files.exists(path)) {
+            System.out.println("ExcelHandler: El archivo no existe: " + rutaArchivo);
             return new ArrayList<>();
         }
 
         try {
-            if (Files.size(path) == 0L) return new ArrayList<>();
+            long size = Files.size(path);
+            System.out.println("ExcelHandler: Tamaño del archivo: " + size);
+            if (size == 0L) return new ArrayList<>();
         } catch (IOException e) {
         }
 
         try {
-            DatoAmbientalListener listener = new DatoAmbientalListener();
-            EasyExcel.read(rutaArchivo, DatoAmbiental.class, listener).sheet().doReadSync();
-            return listener.getDatos();
+            List<DatoAmbiental> datos = EasyExcel.read(rutaArchivo)
+                .head(DatoAmbiental.class)
+                .sheet()
+                .doReadSync();
+            
+            System.out.println("ExcelHandler: Datos leidos con doReadSync: " + datos.size());
+            
+            if (datos.isEmpty()) {
+                System.out.println("ExcelHandler: Intentando leer como List<String>...");
+                List<List<String>> datosString = EasyExcel.read(rutaArchivo)
+                    .sheet()
+                    .doReadSync();
+                
+                System.out.println("ExcelHandler: Datos String leidos: " + datosString.size());
+                for (List<String> row : datosString) {
+                    System.out.println("ExcelHandler: Fila: " + row);
+                }
+                
+                datos = new ArrayList<>();
+                for (List<String> row : datosString) {
+                    DatoAmbiental dato = new DatoAmbiental();
+                    dato.setDato1(row.size() > 0 ? row.get(0) : "");
+                    dato.setDato2(row.size() > 1 ? row.get(1) : "");
+                    dato.setDato3(row.size() > 2 ? row.get(2) : "");
+                    dato.setDato4(row.size() > 3 ? row.get(3) : "");
+                    dato.setDato5(row.size() > 4 ? row.get(4) : "");
+                    dato.setDato6(row.size() > 5 ? row.get(5) : "");
+                    datos.add(dato);
+                }
+            }
+            
+            for (DatoAmbiental d : datos) {
+                System.out.println("ExcelHandler: " + d);
+            }
+            
+            return datos;
         } catch (Exception e) {
+            System.out.println("ExcelHandler: Error: " + e.getMessage());
+            e.printStackTrace();
             throw new IOException("Error al leer el archivo Excel: " + e.getMessage(), e);
         }
     }
@@ -52,8 +92,9 @@ public class ExcelHandler {
      */
     public static void escribirExcel(String rutaArchivo, List<DatoAmbiental> datos) throws IOException {
         try {
-            // Usamos EasyExcel para escribir los datos en el archivo Excel
-            EasyExcel.write(rutaArchivo, DatoAmbiental.class).sheet("Datos Ambientales").doWrite(datos);
+            EasyExcel.write(rutaArchivo, DatoAmbiental.class)
+                .sheet("Datos")
+                .doWrite(datos);
         } catch (Exception e) {
             throw new IOException("Error al escribir en el archivo Excel: " + e.getMessage(), e);
         }
