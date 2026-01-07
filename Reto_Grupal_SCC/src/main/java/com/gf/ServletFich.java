@@ -18,6 +18,7 @@ import com.gf.handlers.JSONHandler;
 import com.gf.handlers.XMLHandler;
 import com.gf.models.DatoAmbiental;
 import com.gf.handlers.CSVHandler;
+import com.gf.handlers.ExcelHandler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -200,7 +201,36 @@ public class ServletFich extends HttpServlet {
                 request.setAttribute("error", "Error leyendo CSV: " + e.getMessage());
                 return "TratamientoFich.jsp";
             }
-        } else if ("rdf".equalsIgnoreCase(formato)) {
+        } else if ("xls".equalsIgnoreCase(formato) || "xlsx".equalsIgnoreCase(formato)) {
+            Part uploadPart = request.getPart("uploadFile");
+            if (uploadPart == null || uploadPart.getSize() == 0) {
+                request.setAttribute("error", "No se ha seleccionado ningún archivo Excel para cargar.");
+                return "TratamientoFich.jsp";
+            }
+
+            Path target = filesDir.resolve("datos.xlsx");
+            try (java.io.InputStream in = uploadPart.getInputStream()) {
+                Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            try {
+                // Usamos ExcelHandler para leer el archivo Excel
+                List<DatoAmbiental> registros = ExcelHandler.leerExcel(target.toString());
+                if (registros != null) {
+                    request.setAttribute("registros", registros);
+                    return "MostrarExcel.jsp"; // Mostrar los registros leídos en una página
+                } else {
+                    request.setAttribute("error", "El archivo Excel está vacío o no se pudo leer.");
+                    return "TratamientoFich.jsp";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                request.setAttribute("error", "Error leyendo el archivo Excel: " + e.getMessage());
+                return "TratamientoFich.jsp";
+            }
+        }
+        
+        else if ("rdf".equalsIgnoreCase(formato)) {
             request.setAttribute("error", "Formato 'RDF' no implementado para lectura.");
             return "TratamientoFich.jsp";
         }
