@@ -17,6 +17,7 @@ import com.alibaba.excel.EasyExcel;
 import com.gf.handlers.JSONHandler;
 import com.gf.handlers.XMLHandler;
 import com.gf.models.DatoAmbiental;
+import com.gf.handlers.CSVHandler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -178,6 +179,27 @@ public class ServletFich extends HttpServlet {
                 request.setAttribute("error", "Error leyendo XML: " + e.getMessage());
                 return "TratamientoFich.jsp";
             }
+        } else if ("csv".equalsIgnoreCase(formato)) {
+            Part uploadPart = request.getPart("uploadFile");
+            if (uploadPart == null || uploadPart.getSize() == 0) {
+                request.setAttribute("error", "No se ha seleccionado ningún archivo CSV para cargar.");
+                return "TratamientoFich.jsp";
+            }
+
+            Path target = filesDir.resolve("datos.csv");
+            try (java.io. InputStream in = uploadPart.getInputStream()) {
+                Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            try {
+                List<DatoAmbiental> registros = CSVHandler.leerCSV(target. toString());
+                request.setAttribute("registros", registros);
+                return "MostrarCSV.jsp";
+            } catch (IOException e) {
+                e.printStackTrace();
+                request.setAttribute("error", "Error leyendo CSV: " + e.getMessage());
+                return "TratamientoFich.jsp";
+            }
         } else if ("rdf".equalsIgnoreCase(formato)) {
             request.setAttribute("error", "Formato 'RDF' no implementado para lectura.");
             return "TratamientoFich.jsp";
@@ -246,7 +268,7 @@ public class ServletFich extends HttpServlet {
                     EasyExcel.write(baseDir.resolve("datos.xlsx").toString())
                             .sheet("Datos")
                             .doWrite(excelData);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;

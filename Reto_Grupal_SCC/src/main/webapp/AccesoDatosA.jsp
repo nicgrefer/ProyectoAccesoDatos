@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
+<%@ page import="java. util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,7 +16,7 @@
 	th, td {
 		border: 1px solid #000;
 		padding: 8px;
-		text-align: left;
+		text-align:  left;
 	}
 	th {
 		background-color: #f2f2f2;
@@ -81,10 +81,13 @@
 						} else if ("xml".equalsIgnoreCase(formato)) {
 							downloadUrl = "DownloadXml";
 							fileName = "datos.xml";
+						} else if ("csv".equalsIgnoreCase(formato)) {
+							downloadUrl = "DownloadCsv";
+							fileName = "datos.csv";
 						}
 						
 						if (downloadUrl != null) {
-							java.nio.file.Path filePath = java.nio.file.Paths.get(
+							java.nio.file.Path filePath = java.nio.file.Paths. get(
 								getServletContext().getRealPath("/files"), fileName
 							);
 							if (java.nio.file.Files.exists(filePath)) {
