@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registros JSON</title>
+<title>Registros EXCEL</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -79,7 +79,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Registros JSON</h1>
+            <h1>Registros EXCEL</h1>
         </div>
         <div class="content">
             <%
@@ -116,8 +116,8 @@
             </table>
 
             <div style="margin-top:12px;">
-                <a href="AccesoDatosA.jsp">Volver</a>
-                <a href="DownloadJson" style="margin-left:12px;">Descargar JSON</a>
+                <a href="TratamientoFich.jsp">Volver</a>
+                <a href="DownloadExcel" style="margin-left:12px;">Descargar Excel</a>
             </div>
         </div>
     </div>

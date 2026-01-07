@@ -78,7 +78,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Lectura de Archivo CSV</h1>
+        <h1>Lectura de Archivo CSV</h1>
         <p class="info">Datos Ambientales - Formato CSV</p>
 
         <%
@@ -126,10 +126,10 @@
 
         <div class="actions">
             <form action="ServletFich" method="post" style="display: inline;">
-                <button type="submit" name="boton" value="volverTratamiento">⬅️ Volver al Formulario</button>
+                <button type="submit" name="boton" value="volverTratamiento">Volver al Formulario</button>
             </form>
             
-            <a href="DownloadCsv">📥 Descargar CSV</a>
+            <a href="DownloadCsv">Descargar CSV</a>
         </div>
     </div>
 </body>
