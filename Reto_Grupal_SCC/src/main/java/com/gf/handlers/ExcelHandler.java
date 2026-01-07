@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,19 +26,18 @@ public class ExcelHandler {
     public static List<DatoAmbiental> leerExcel(String rutaArchivo) throws IOException {
         Path path = Paths.get(rutaArchivo);
         if (!Files.exists(path)) {
-            return null;  // Si el archivo no existe, devolvemos null
+            return new ArrayList<>();
         }
 
-        // Si el archivo está vacío, devolvemos null
         try {
-            if (Files.size(path) == 0L) return null;
+            if (Files.size(path) == 0L) return new ArrayList<>();
         } catch (IOException e) {
-            // Si no podemos comprobar el tamaño, intentamos leer el archivo igualmente
         }
 
         try {
-            // Usamos EasyExcel para leer el archivo Excel
-            return EasyExcel.read(rutaArchivo, DatoAmbiental.class, new DatoAmbientalListener()).sheet().doReadSync();
+            DatoAmbientalListener listener = new DatoAmbientalListener();
+            EasyExcel.read(rutaArchivo, DatoAmbiental.class, listener).sheet().doReadSync();
+            return listener.getDatos();
         } catch (Exception e) {
             throw new IOException("Error al leer el archivo Excel: " + e.getMessage(), e);
         }
