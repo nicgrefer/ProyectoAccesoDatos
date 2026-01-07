@@ -1,15 +1,19 @@
 package com.gf.handlers;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.read.listener.ReadListener;
 import com.gf.models.DatoAmbiental;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Handler para operaciones con archivos Excel (XLSX).
@@ -20,7 +24,7 @@ public class ExcelHandler {
 
     /**
      * Lee datos desde un archivo Excel (XLSX).
-     * Utiliza EasyExcel para leer el archivo y convertirlo en una lista de objetos DatoAmbiental.
+     * Utiliza Apache POI para leer el archivo y convertirlo en una lista de objetos DatoAmbiental.
      * @param rutaArchivo Ruta completa del archivo Excel a leer
      * @return Lista de objetos DatoAmbiental leída desde el archivo
      * @throws IOException Si hay un error al leer el archivo
@@ -28,58 +32,70 @@ public class ExcelHandler {
     public static List<DatoAmbiental> leerExcel(String rutaArchivo) throws IOException {
         Path path = Paths.get(rutaArchivo);
         if (!Files.exists(path)) {
-            System.out.println("ExcelHandler: El archivo no existe: " + rutaArchivo);
             return new ArrayList<>();
         }
 
-        try {
-            long size = Files.size(path);
-            System.out.println("ExcelHandler: Tamaño del archivo: " + size);
-            if (size == 0L) return new ArrayList<>();
-        } catch (IOException e) {
+        if (Files.size(path) == 0L) {
+            return new ArrayList<>();
         }
 
-        try {
-            List<DatoAmbiental> datos = EasyExcel.read(rutaArchivo)
-                .head(DatoAmbiental.class)
-                .sheet()
-                .doReadSync();
+        List<DatoAmbiental> resultado = new ArrayList<>();
+        
+        try (InputStream fis = Files.newInputStream(path);
+             Workbook workbook = new XSSFWorkbook(fis)) {
             
-            System.out.println("ExcelHandler: Datos leidos con doReadSync: " + datos.size());
-            
-            if (datos.isEmpty()) {
-                System.out.println("ExcelHandler: Intentando leer como List<String>...");
-                List<List<String>> datosString = EasyExcel.read(rutaArchivo)
-                    .sheet()
-                    .doReadSync();
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
                 
-                System.out.println("ExcelHandler: Datos String leidos: " + datosString.size());
-                for (List<String> row : datosString) {
-                    System.out.println("ExcelHandler: Fila: " + row);
-                }
-                
-                datos = new ArrayList<>();
-                for (List<String> row : datosString) {
+                boolean isFirstRow = true;
+                for (Row row : sheet) {
+                    if (isFirstRow) {
+                        isFirstRow = false;
+                        continue;
+                    }
+                    
                     DatoAmbiental dato = new DatoAmbiental();
-                    dato.setDato1(row.size() > 0 ? row.get(0) : "");
-                    dato.setDato2(row.size() > 1 ? row.get(1) : "");
-                    dato.setDato3(row.size() > 2 ? row.get(2) : "");
-                    dato.setDato4(row.size() > 3 ? row.get(3) : "");
-                    dato.setDato5(row.size() > 4 ? row.get(4) : "");
-                    dato.setDato6(row.size() > 5 ? row.get(5) : "");
-                    datos.add(dato);
+                    int cellIndex = 0;
+                    for (Cell cell : row) {
+                        String valor = getCellValue(cell);
+                        
+                        switch (cellIndex) {
+                            case 0: dato.setDato1(valor); break;
+                            case 1: dato.setDato2(valor); break;
+                            case 2: dato.setDato3(valor); break;
+                            case 3: dato.setDato4(valor); break;
+                            case 4: dato.setDato5(valor); break;
+                            case 5: dato.setDato6(valor); break;
+                        }
+                        cellIndex++;
+                    }
+                    resultado.add(dato);
                 }
             }
             
-            for (DatoAmbiental d : datos) {
-                System.out.println("ExcelHandler: " + d);
-            }
-            
-            return datos;
         } catch (Exception e) {
-            System.out.println("ExcelHandler: Error: " + e.getMessage());
-            e.printStackTrace();
             throw new IOException("Error al leer el archivo Excel: " + e.getMessage(), e);
+        }
+        
+        return resultado;
+    }
+    
+    private static String getCellValue(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                }
+                return String.valueOf(cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
         }
     }
 
@@ -92,12 +108,19 @@ public class ExcelHandler {
      */
     public static void escribirExcel(String rutaArchivo, List<DatoAmbiental> datos) throws IOException {
         try {
-            EasyExcel.write(rutaArchivo, DatoAmbiental.class)
+            EasyExcel.write(rutaArchivo)
+                .head(createHeader())
                 .sheet("Datos")
                 .doWrite(datos);
         } catch (Exception e) {
             throw new IOException("Error al escribir en el archivo Excel: " + e.getMessage(), e);
         }
+    }
+    
+    private static java.util.List<List<String>> createHeader() {
+        java.util.List<List<String>> header = new java.util.ArrayList<>();
+        header.add(java.util.Arrays.asList("DATO 1", "DATO 2", "DATO 3", "DATO 4", "DATO 5", "DATO 6"));
+        return header;
     }
 
     /**
