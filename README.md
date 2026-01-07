@@ -207,4 +207,4 @@ Los archivos se almacenan en: `webapp/files/`
 
 ## Licencia
 
-Proyecto académico - Centro de Enseñanza Concertada "Gregorio Fernández"
+[Licencia MIT](LICENSE)
