@@ -91,6 +91,11 @@
 				%>
 				<a href="<%= downloadUrl %>" style="margin-left:12px;">Descargar <%= fileName.substring(0, fileName.lastIndexOf('.')).toUpperCase() %></a>
 				<%
+					} else if (formato != null && "xml".equalsIgnoreCase(formato)) {
+				%>
+				<!-- Botón para descargar XML (solo si el formato seleccionado fue XML) -->
+				<a href="DownloadXml" style="margin-left:12px;">Descargar XML</a>
+				<%
 							}
 						}
 					}
