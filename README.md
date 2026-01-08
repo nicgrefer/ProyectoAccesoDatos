@@ -24,7 +24,7 @@ Este proyecto es una aplicación web desarrollada en Java EE que permite gestion
 | XML     | ✅      | ✅        | XMLHandler.java |
 | CSV     | ✅      | ✅        | CSVHandler.java |
 | XLS     | ✅      | ✅        | ExcelHandler.java |
-| RDF     | ✅      | ✅        | No implementado |
+| RDF     | ✅      | ✅        | RDFHandler.java |
 
 ---
 
