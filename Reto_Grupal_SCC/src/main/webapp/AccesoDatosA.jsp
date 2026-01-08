@@ -88,6 +88,10 @@
 							downloadUrl = "DownloadExcel";
 							fileName = "datos.xlsx";
 						}
+						else if ("rdf".equalsIgnoreCase(formato)) {
+				            downloadUrl = "DownloadRDF";
+				            fileName = "datos.ttl";
+				        }
 						
 						if (downloadUrl != null) {
 							java.nio.file.Path filePath = java.nio.file.Paths. get(
