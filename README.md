@@ -24,7 +24,7 @@ Este proyecto es una aplicación web desarrollada en Java EE que permite gestion
 | XML     | ✅      | ✅        | XMLHandler.java |
 | CSV     | ✅      | ✅        | CSVHandler.java |
 | XLS     | ✅      | ✅        | ExcelHandler.java |
-| RDF     | ❌      | ❌        | No implementado |
+| RDF     | ✅      | ✅        | No implementado |
 
 ---
 
@@ -40,6 +40,7 @@ Este proyecto es una aplicación web desarrollada en Java EE que permite gestion
 - **Apache Commons CSV 1.14.1** - Procesamiento CSV
 - **EasyExcel 4.0.3** - Procesamiento Excel
 - **DOM Parser** - Procesamiento XML (incluido en Java)
+- **Apache Jena** - Procesamiento RDF
 
 ### Herramientas
 - **Maven** - Gestión de dependencias
@@ -59,11 +60,13 @@ Reto_Grupal_SCC/
 │   │   ├── XMLHandler.java
 │   │   ├── CSVHandler.java
 │   │   ├── ExcelHandler.java
+│   │   ├── RDFHandler.java
 │   │   └── DatoAmbientalListener.java
 │   ├── ServletFich.java
 │   ├── DownloadJsonServlet.java
 │   ├── DownloadXmlServlet.java
 │   ├── DownloadCsvServlet.java
+│   ├── DownloadRDFServlet.java
 │   └── DownloadExcelServlet.java
 ├── src/main/webapp/
 │   ├── WEB-INF/web.xml
@@ -74,6 +77,7 @@ Reto_Grupal_SCC/
 │   ├── MostrarXML.jsp
 │   ├── MostrarCSV.jsp
 │   ├── MostrarExcel.jsp
+│   ├── MostrarRDF.jsp
 │   └── Error.jsp
 ├── pom.xml
 └── README.md
@@ -146,6 +150,7 @@ http://localhost:8080/Reto_Grupal_SCC/TratamientoFich.jsp
 | `/DownloadXml` | GET | Descarga archivo datos.xml |
 | `/DownloadCsv` | GET | Descarga archivo datos.csv |
 | `/DownloadExcel` | GET | Descarga archivo datos.xlsx |
+| `/DownloadRDF` | GET | Descarga archivo datos.ttl |
 
 ---
 
@@ -156,6 +161,7 @@ Los archivos se almacenan en: `webapp/files/`
 - `datos.xml`
 - `datos.csv`
 - `datos.xlsx`
+- `datos.ttl`
 
 ---
 
@@ -184,13 +190,18 @@ Los archivos se almacenan en: `webapp/files/`
 - `convertirListaADato(List<String> listaDatos)` - Convierte lista a objeto
 - `convertirDatoALista(DatoAmbiental dato)` - Convierte objeto a lista
 
+### RDFHandler.java
+- `leerRDF(String rutaArchivo) - Lee datos desde un archivo RDF (formato Turtle .ttl) usando Apache Jena
+- `escribirRDF(String rutaArchivo, DatoAmbiental dato)` - Añade un nuevo registro al grafo RDF y guarda el archivo en disco
+- `convertirListaADato(List<String>listaDatos)` - Convierte una lista de Strings (del formulario) a objeto
+
 ### DatoAmbientalListener.java
 - Listener para EasyExcel que permite leer archivos Excel (legacy)
 
 ### ServletFich.java
 - CSV: Implementa escritura con Apache Commons CSV (append mode)
 - XLS: Implementa escritura con EasyExcel y cabeceras
-- RDF: No implementado
+- RDF: Implementa escritura con Apache Jena
 
 ---
 
@@ -208,8 +219,8 @@ Los archivos se almacenan en: `webapp/files/`
 
 - Paula - XMLHandler
 - Nicolás - JSONHandler
-- Gabreil - CSV (integrado en servlet)
-- Juan - JSPs y servlets de descarga
+- Gabriel - CSV (integrado en servlet)
+- Juan - RDFHandler
 - Sara - Excel (ExcelHandler + DownloadExcelServlet)
 
 ---
