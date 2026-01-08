@@ -68,6 +68,12 @@
 	</dependency>
 	
 	<!-- DEPENDENCIA PARA RDF -->
+	<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>apache-jena-libs</artifactId>
+    <type>pom</type>
+    <version>4.10.0</version>
+</dependency>
   </dependencies>
 
   <build>
