@@ -79,7 +79,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Registros EXCEL</h1>
+            <h1>Registros RDF</h1>
         </div>
         <div class="content">
             <%
