@@ -291,10 +291,10 @@ public class ServletFich extends HttpServlet {
 			listaDatos.add(param);
 		}
 
-		if ("rdf".equalsIgnoreCase(formato)) {
-			request.setAttribute("error", "Formato 'RDF' no implementado para escritura.");
-			return "TratamientoFich.jsp";
-		}
+//		if ("rdf".equalsIgnoreCase(formato)) {
+//		    request.setAttribute("error", "Formato 'RDF' no implementado para escritura.");
+//		    return "TratamientoFich.jsp";
+//		}
 
 		// Procesar los datos y escribir en el archivo correspondiente
 		procesarDatos(listaDatos, formato, filesDir);
