@@ -1,4 +1,8 @@
 # Reto Grupal - Sistema de Gestión de Datos
+![Java](https://img.shields.io/static/v1?label=Java&message=17/22&color=orange&style=flat-square&logo=openjdk)
+![Repo Size](https://img.shields.io/github/repo-size/nicgrefer/ProyectoAccesoDatos?style=flat-square)
+![License](https://img.shields.io/github/license/nicgrefer/ProyectoAccesoDatos?style=flat-square&color=blue)
+![Contributors](https://img.shields.io/github/contributors/nicgrefer/ProyectoAccesoDatos?style=flat-square&color=purple)
 
 Aplicación web Java EE para la lectura y escritura de datos en múltiples formatos de archivo.
 
