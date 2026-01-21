@@ -57,8 +57,8 @@ public class RegistrosLN {
             return false;
         }
         
-        // Validar formato de DNI español
-        if (!DNI_PATTERN.matcher(dni.trim()).matches()) {
+        // Validar formato de DNI español (normalizar a mayúsculas para validación)
+        if (!DNI_PATTERN.matcher(dni.trim().toUpperCase()).matches()) {
             System.out.println("Validación fallida: Formato de DNI incorrecto");
             return false;
         }
@@ -124,6 +124,7 @@ public class RegistrosLN {
         if (dni == null || dni.trim().isEmpty()) {
             return false;
         }
-        return DNI_PATTERN.matcher(dni.trim()).matches();
+        // Normalizar a mayúsculas para validación consistente
+        return DNI_PATTERN.matcher(dni.trim().toUpperCase()).matches();
     }
 }

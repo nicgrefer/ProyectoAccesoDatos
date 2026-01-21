@@ -111,7 +111,8 @@
                 <input type="text" id="dni" name="dni" required 
                        pattern="[0-9]{8}[A-Za-z]" 
                        title="Formato: 8 dígitos seguidos de una letra (ej: 12345678A)"
-                       placeholder="12345678A">
+                       placeholder="12345678A"
+                       style="text-transform: uppercase;">
                 <div class="error-message" id="dniError"></div>
             </div>
             
@@ -168,10 +169,15 @@
     
     <script>
         // Validación adicional en el cliente
+        document.getElementById('dni').addEventListener('input', function() {
+            // Convertir a mayúsculas mientras se escribe
+            this.value = this.value.toUpperCase();
+        });
+        
         document.getElementById('dni').addEventListener('blur', function() {
             var dni = this.value;
             var errorDiv = document.getElementById('dniError');
-            var pattern = /^[0-9]{8}[A-Za-z]$/;
+            var pattern = /^[0-9]{8}[A-Z]$/;
             
             if (dni && !pattern.test(dni)) {
                 errorDiv.textContent = 'Formato inválido. Debe ser 8 dígitos seguidos de una letra.';
